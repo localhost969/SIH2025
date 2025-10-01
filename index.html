@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Paper Sense · Local-host — KMRL Document Intelligence</title>
+    <meta
+      name="description"
+      content="Mock UI for SIH 2025 PS 25080: Document Overload at KMRL — an automated solution by team Local-host."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                'Inter',
+                'ui-sans-serif',
+                'system-ui',
+                'Segoe UI',
+                'Roboto',
+                'Helvetica Neue',
+                'Arial',
+                'Noto Sans',
+                'Apple Color Emoji',
+                'Segoe UI Emoji',
+              ],
+            },
+            colors: {
+              paper: '#F7FAFC',
+              brand: {
+                50: '#f5f8ff',
+                100: '#e9effe',
+                200: '#cddafc',
+                300: '#a6bef7',
+                400: '#6f97ec',
+                500: '#386fe0',
+                600: '#1f57c7',
+                700: '#1946a1',
+                800: '#12367b',
+                900: '#0b2450',
+                DEFAULT: '#1f57c7',
+              },
+            },
+            boxShadow: {
+              subtle: '0 1px 2px 0 rgba(0,0,0,0.04), 0 1px 1px -1px rgba(0,0,0,0.04)',
+            },
+          },
+        },
+        future: { hoverOnlyWhenSupported: true },
+      };
+    </script>
+    <style>
+      html { scroll-behavior: smooth; }
+      .container-px { padding-left: 1rem; padding-right: 1rem; }
+      @media (min-width: 1024px) { .container-px { padding-left: 2rem; padding-right: 2rem; } }
+      /* Enhanced demo animations */
+      .progress-anim { background-image: linear-gradient(90deg, rgba(31,87,199,1) 0%, rgba(106,160,255,1) 50%, rgba(31,87,199,1) 100%); background-size: 200% 100%; animation: progressShift 2s linear infinite; }
+      @keyframes progressShift { from { background-position: 0% 0; } to { background-position: 200% 0; } }
+      .ai-beams { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; background: radial-gradient(800px 200px at -10% 20%, rgba(56,111,224,0.15), transparent 70%), radial-gradient(800px 200px at 110% 80%, rgba(56,111,224,0.15), transparent 70%); opacity: 0; transition: opacity .4s ease; }
+      .ai-beams.on { opacity: 1; }
+      .skeleton-line { height: 10px; border-radius: 9999px; background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 37%, #e5e7eb 63%); background-size: 400% 100%; animation: skeletonShimmer 1.4s ease infinite; }
+      @keyframes skeletonShimmer { 0% { background-position: 100% 0 } 100% { background-position: 0 0 } }
+      .folder-summary::-webkit-details-marker { display: none; }
+      .folder-summary:before { content: '▸'; display:inline-block; margin-right: .5rem; transform: rotate(0deg); transition: transform .2s ease; color: #1f57c7; }
+      details[open] > .folder-summary:before { transform: rotate(90deg); }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      /* Custom thin scrollbars */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb { background: #1f57c7; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #1946a1; }
+      * { scrollbar-width: thin; scrollbar-color: #1f57c7 #f1f5f9; }
+    </style>
+  </head>
+  <body class="bg-paper text-slate-800 antialiased selection:bg-brand-100 selection:text-slate-900">
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
+      <nav class="max-w-7xl mx-auto container-px">
+        <div class="flex items-center justify-between h-14">
+          <a href="#top" class="flex items-center gap-3 group" id="top">
+            <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-white shadow-subtle">
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 7h10M4 12h16M4 17h12" stroke-linecap="round" />
+              </svg>
+            </span>
+            <span class="font-semibold text-slate-900 tracking-tight">Paper&nbsp;Sense</span>
+            <span class="hidden sm:inline text-xs text-slate-500">by Local-host</span>
+          </a>
+          <div class="flex items-center gap-2">
+            <ul class="hidden md:flex items-center gap-6 text-sm">
+              <li><a class="hover:text-brand-700" href="#problem">Problem</a></li>
+              <li><a class="hover:text-brand-700" href="#solution">Solution</a></li>
+              <li><a class="hover:text-brand-700" href="#demo">Demo</a></li>
+              <li><a class="hover:text-brand-700" href="#architecture">Architecture</a></li>
+              <li><a class="hover:text-brand-700" href="#feasibility">Feasibility</a></li>
+              <li><a class="hover:text-brand-700" href="#benefits">Benefits</a></li>
+              <li><a class="hover:text-brand-700" href="#references">References</a></li>
+            </ul>
+            <button id="menuBtn" class="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">
+              <span class="sr-only">Open menu</span>
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="mobileMenu" class="md:hidden hidden border-t border-slate-200 py-3">
+          <ul class="grid gap-2 text-sm">
+            <li><a class="block px-1 py-2 rounded hover:bg-slate-50" href="#problem">Problem</a></li>
+            <li><a class="block px-1 py-2 rounded hover:bg-slate-50" href="#solution">Solution</a></li>
+            <li><a class="block px-1 py-2 rounded hover:bg-slate-50" href="#demo">Demo</a></li>
+            <li><a class="block px-1 py-2 rounded hover:bg-slate-50" href="#architecture">Architecture</a></li>
+            <li><a class="block px-1 py-2 rounded hover:bg-slate-50" href="#feasibility">Feasibility</a></li>
+            <li><a class="block px-1 py-2 rounded hover:bg-slate-50" href="#benefits">Benefits</a></li>
+            <li><a class="block px-1 py-2 rounded hover:bg-slate-50" href="#references">References</a></li>
+            <li><a class="block px-1 py-2 rounded hover:bg-slate-50" href="#contact">Contact</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Live Mock Demo - Hero Section -->
+    <section id="demo" class="pt-6 pb-16 lg:pb-24 bg-gradient-to-b from-white to-brand-50">
+      <div class="max-w-7xl mx-auto container-px">
+        <div class="mb-6 flex items-end justify-between gap-4 flex-wrap">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Live Mock Demo</h2>
+            <p class="mt-2 text-slate-600 text-sm">Locally hosted cloud — no uploads leave your local server.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center gap-2 text-sm text-slate-600">
+              <i data-lucide="cpu" class="w-4 h-4 text-green-500 animate-pulse"></i>
+              Analyzing documents...
+            </span>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle relative overflow-hidden">
+          <div id="aiBeams" class="ai-beams"></div>
+          <!-- Stepper -->
+          <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <li class="flex items-center gap-2" data-demo-step="0">
+              <span class="demo-dot inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 text-xs text-slate-600">1</span>
+              <span class="text-xs text-slate-700">Ingestion</span>
+            </li>
+            <li class="flex items-center gap-2" data-demo-step="1">
+              <span class="demo-dot inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 text-xs text-slate-600">2</span>
+              <span class="text-xs text-slate-700">OCR</span>
+            </li>
+            <li class="flex items-center gap-2" data-demo-step="2">
+              <span class="demo-dot inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 text-xs text-slate-600">3</span>
+              <span class="text-xs text-slate-700">Summarization</span>
+            </li>
+            <li class="flex items-center gap-2" data-demo-step="3">
+              <span class="demo-dot inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 text-xs text-slate-600">4</span>
+              <span class="text-xs text-slate-700">Prioritization</span>
+            </li>
+            <li class="flex items-center gap-2" data-demo-step="4">
+              <span class="demo-dot inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 text-xs text-slate-600">5</span>
+              <span class="text-xs text-slate-700">Routing</span>
+            </li>
+            <li class="flex items-center gap-2" data-demo-step="5">
+              <span class="demo-dot inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 text-xs text-slate-600">6</span>
+              <span class="text-xs text-slate-700">Audit Log</span>
+            </li>
+          </ul>
+
+          <!-- Processing Log -->
+          <div class="mt-6">
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-subtle">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="terminal" class="w-4 h-4 text-brand-600"></i>
+                  <p class="text-sm font-medium text-slate-700">Processing Log</p>
+                </div>
+                <div class="h-2 flex-1 max-w-xs ml-4 rounded-full bg-slate-100 overflow-hidden">
+                  <div id="demoProgressBar" class="h-2 w-0 rounded-full bg-brand-600 transition-all duration-500"></div>
+                </div>
+              </div>
+              <div id="demoLog" class="h-32 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-3 font-mono text-xs text-slate-700"></div>
+            </div>
+          </div>
+
+          <!-- Files & Progress -->
+          <div class="mt-6 grid lg:grid-cols-3 gap-6">
+            <!-- File Manager (Local Cloud) -->
+            <div>
+              <div id="fileManager" class="rounded-xl border border-slate-200 bg-white p-4 shadow-subtle">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="hard-drive" class="w-4 h-4 text-brand-600"></i>
+                    <p class="text-sm font-medium text-slate-700">Local Cloud — KMRL Drive</p>
+                  </div>
+                  <span id="selectedCount" class="text-xs text-slate-500">0 selected</span>
+                </div>
+                <div id="fileTree" class="mt-3 space-y-2 text-sm max-h-96 overflow-y-auto">
+                  <details open class="group">
+                    <summary class="folder-summary cursor-pointer select-none text-slate-800 font-medium flex items-center gap-2">
+                      <i data-lucide="folder" class="w-4 h-4 text-brand-600"></i>
+                      Operations
+                    </summary>
+                    <div class="pl-6 space-y-1.5 mt-2">
+                      <div class="file-item flex items-center justify-between gap-2 p-2 rounded hover:bg-slate-50 border border-transparent" data-filename="Safety_Bulletin_SB-2025-09.pdf" data-dept="Operations" data-priority="High" data-date="Oct 1">
+                        <div class="flex items-center gap-2">
+                          <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500"></i>
+                          <span class="text-xs text-slate-700">Safety_Bulletin_SB-2025-09.pdf</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Oct 1</span>
+                      </div>
+                      <div class="file-item flex items-center justify-between gap-2 p-2 rounded hover:bg-slate-50 border border-transparent" data-filename="Shift_Report_Morning.pdf" data-dept="Operations" data-priority="Medium" data-date="Oct 1">
+                        <div class="flex items-center gap-2">
+                          <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500"></i>
+                          <span class="text-xs text-slate-700">Shift_Report_Morning.pdf</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Oct 1</span>
+                      </div>
+                      <div class="file-item flex items-center justify-between gap-2 p-2 rounded hover:bg-slate-50 border border-transparent" data-filename="Maintenance_Schedule_Q4.pdf" data-dept="Operations" data-priority="Medium" data-date="Sep 29">
+                        <div class="flex items-center gap-2">
+                          <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500"></i>
+                          <span class="text-xs text-slate-700">Maintenance_Schedule_Q4.pdf</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Sep 29</span>
+                      </div>
+                    </div>
+                  </details>
+                  <details open class="group">
+                    <summary class="folder-summary cursor-pointer select-none text-slate-800 font-medium flex items-center gap-2">
+                      <i data-lucide="folder" class="w-4 h-4 text-brand-600"></i>
+                      Engineering
+                    </summary>
+                    <div class="pl-6 space-y-1.5 mt-2">
+                      <div class="file-item flex items-center justify-between gap-2 p-2 rounded hover:bg-slate-50 border border-transparent" data-filename="Engineering_Change_ECO-142.docx" data-dept="Engineering" data-priority="Medium" data-date="Sep 30">
+                        <div class="flex items-center gap-2">
+                          <i data-lucide="file-code" class="w-3.5 h-3.5 text-slate-500"></i>
+                          <span class="text-xs text-slate-700">Engineering_Change_ECO-142.docx</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Sep 30</span>
+                      </div>
+                      <div class="file-item flex items-center justify-between gap-2 p-2 rounded hover:bg-slate-50 border border-transparent" data-filename="Track_Inspection_Report.pdf" data-dept="Engineering" data-priority="High" data-date="Sep 30">
+                        <div class="flex items-center gap-2">
+                          <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500"></i>
+                          <span class="text-xs text-slate-700">Track_Inspection_Report.pdf</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Sep 30</span>
+                      </div>
+                    </div>
+                  </details>
+                  <details open class="group">
+                    <summary class="folder-summary cursor-pointer select-none text-slate-800 font-medium flex items-center gap-2">
+                      <i data-lucide="folder" class="w-4 h-4 text-brand-600"></i>
+                      Finance
+                    </summary>
+                    <div class="pl-6 space-y-1.5 mt-2">
+                      <div class="file-item flex items-center justify-between gap-2 p-2 rounded hover:bg-slate-50 border border-transparent" data-filename="Vendor_Invoice_INV-0925.xlsx" data-dept="Finance" data-priority="Low" data-date="Oct 1">
+                        <div class="flex items-center gap-2">
+                          <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-slate-500"></i>
+                          <span class="text-xs text-slate-700">Vendor_Invoice_INV-0925.xlsx</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Oct 1</span>
+                      </div>
+                      <div class="file-item flex items-center justify-between gap-2 p-2 rounded hover:bg-slate-50 border border-transparent" data-filename="Purchase_Order_PO-6631.pdf" data-dept="Finance" data-priority="Low" data-date="Sep 30">
+                        <div class="flex items-center gap-2">
+                          <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500"></i>
+                          <span class="text-xs text-slate-700">Purchase_Order_PO-6631.pdf</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Sep 30</span>
+                      </div>
+                    </div>
+                  </details>
+                  <details class="group">
+                    <summary class="folder-summary cursor-pointer select-none text-slate-800 font-medium flex items-center gap-2">
+                      <i data-lucide="folder" class="w-4 h-4 text-brand-600"></i>
+                      HR
+                    </summary>
+                    <div class="pl-6 space-y-1.5 mt-2">
+                      <div class="file-item flex items-center justify-between gap-2 p-2 rounded hover:bg-slate-50 border border-transparent" data-filename="Leave_Policy_Update.pdf" data-dept="HR" data-priority="Low" data-date="Sep 29">
+                        <div class="flex items-center gap-2">
+                          <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500"></i>
+                          <span class="text-xs text-slate-700">Leave_Policy_Update.pdf</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Sep 29</span>
+                      </div>
+                    </div>
+                  </details>
+                </div>
+                <div class="mt-4">
+                  <p class="text-xs text-slate-500 mb-1">Currently Processing</p>
+                  <div id="selectedFilesChips" class="flex flex-wrap gap-2"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Generated Summaries -->
+            <div>
+              <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-subtle">
+                <div class="flex items-center gap-2 mb-3">
+                  <i data-lucide="sparkles" class="w-4 h-4 text-brand-600"></i>
+                  <p class="text-sm font-semibold text-slate-700">AI-Generated Summaries</p>
+                </div>
+                <div id="summariesContainer" class="space-y-3 max-h-96 overflow-y-auto"></div>
+              </div>
+            </div>
+
+            <!-- Priority Routing Results -->
+            <div>
+              <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-subtle">
+                <div class="flex items-center gap-2 mb-3">
+                  <i data-lucide="git-branch" class="w-4 h-4 text-brand-600"></i>
+                  <p class="text-sm font-semibold text-slate-700">Priority & Routing</p>
+                </div>
+                <div id="resultCards" class="space-y-3 max-h-96 overflow-y-auto"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white">
+      <div class="max-w-7xl mx-auto container-px py-16 lg:py-24">
+        <div class="grid lg:grid-cols-2 gap-10 items-center">
+          <div>
+            <div class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-3 py-1 text-xs text-brand-700 shadow-subtle mb-4">
+              <span class="font-semibold">SIH 2025</span>
+              <span>Problem Statement ID: 25080</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900">
+              Document Intelligence for KMRL
+            </h1>
+            <p class="mt-4 text-base sm:text-lg text-slate-600 max-w-2xl">
+              Paper Sense is a consolidated platform to summarize, route, and govern incoming documents across departments — enabling timely action and audit-ready traceability.
+            </p>
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+              <a href="#problem" class="inline-flex items-center rounded-lg bg-brand-600 text-white text-sm font-medium px-4 py-2.5 shadow-subtle hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300">Explore Solution</a>
+              <a href="#problem" class="inline-flex items-center rounded-lg border border-slate-200 bg-white text-slate-800 text-sm font-medium px-4 py-2.5 hover:bg-slate-50">See the Problem</a>
+            </div>
+            <dl class="mt-8 grid grid-cols-2 gap-4 text-sm text-slate-600 max-w-xl">
+              <div class="rounded-xl bg-white p-4 border border-slate-200 shadow-subtle">
+                <dt class="font-medium text-slate-700">Organization</dt>
+                <dd>Government of Kerala</dd>
+              </div>
+              <div class="rounded-xl bg-white p-4 border border-slate-200 shadow-subtle">
+                <dt class="font-medium text-slate-700">Department</dt>
+                <dd>Kochi Metro Rail Limited (KMRL)</dd>
+              </div>
+              <div class="rounded-xl bg-white p-4 border border-slate-200 shadow-subtle">
+                <dt class="font-medium text-slate-700">Theme</dt>
+                <dd>Smart Automation</dd>
+              </div>
+              <div class="rounded-xl bg-white p-4 border border-slate-200 shadow-subtle">
+                <dt class="font-medium text-slate-700">Category</dt>
+                <dd>Software</dd>
+              </div>
+              <div class="rounded-xl bg-white p-4 border border-slate-200 shadow-subtle col-span-2 sm:col-span-1">
+                <dt class="font-medium text-slate-700">Team ID</dt>
+                <dd>65484 · Team Local-host</dd>
+              </div>
+            </dl>
+          </div>
+          <div class="lg:pl-8">
+            <div class="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+              <div class="absolute -top-3 -left-3 h-16 w-16 rounded-xl bg-brand-600 opacity-10"></div>
+              <h3 class="text-sm font-semibold text-slate-700">Platform Snapshot</h3>
+              <ul class="mt-3 space-y-2 text-sm text-slate-600">
+                <li class="flex gap-2"><span class="text-brand-700">•</span> Smart priority inbox with role-based routing</li>
+                <li class="flex gap-2"><span class="text-brand-700">•</span> Instant summaries with links to original documents</li>
+                <li class="flex gap-2"><span class="text-brand-700">•</span> Cross-department alerts and audit trails</li>
+                <li class="flex gap-2"><span class="text-brand-700">•</span> Bilingual document support (English/Malayalam)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="problem" class="py-16 lg:py-24">
+      <div class="max-w-7xl mx-auto container-px">
+        <div class="grid lg:grid-cols-2 gap-8">
+          <div class="rounded-2xl bg-white p-6 border border-slate-200 shadow-subtle">
+            <h2 class="text-xl font-bold text-slate-900">The Problem</h2>
+            <ul class="mt-4 space-y-3 text-slate-700 text-sm">
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Thousands of daily documents from email, Maximo, SharePoint, WhatsApp, and scans.</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Delays in extracting actionable information impacting operations.</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Departmental silos cause duplicated effort and missed updates.</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Compliance risk from buried regulatory updates (CMRS & MoHUA).</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Knowledge loss during transfers/retirements; bilingual complexity.</li>
+            </ul>
+          </div>
+          <div id="solution" class="rounded-2xl bg-white p-6 border border-slate-200 shadow-subtle">
+            <h2 class="text-xl font-bold text-slate-900">Our Solution</h2>
+            <ul class="mt-4 space-y-3 text-slate-700 text-sm">
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Instant, grounded summaries with links back to originals.</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Role-based routing to a smart inbox for Controllers, Engineering, Finance, HR.</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Single source of truth with full traceability and audit logs.</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Cross-department alerts for relevant teams and deadlines.</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Bilingual support with embedded tables and images.</li>
+            </ul>
+            <div class="mt-6 grid sm:grid-cols-2 gap-3">
+              <div class="rounded-xl border border-brand-200 bg-brand-50 p-4">
+                <p class="text-sm font-medium text-brand-800">Unique Advantages</p>
+                <ul class="mt-2 text-sm text-brand-800/90 space-y-1.5">
+                  <li>Local-first deployment (data stays inside)</li>
+                  <li>Context-aware for metro operations</li>
+                  <li>Ready integrations: Maximo, email, SharePoint</li>
+                </ul>
+              </div>
+              <div class="rounded-xl border border-slate-200 bg-white p-4">
+                <p class="text-sm font-medium text-slate-800">Planned Stack</p>
+                <ul class="mt-2 text-sm text-slate-700 space-y-1.5">
+                  <li>Python · FastAPI</li>
+                  <li>Mistral OCR · Mistral LLM</li>
+                  <li>PostgreSQL/MySQL · React (dashboards)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture" class="py-16 lg:py-24 bg-white">
+      <div class="max-w-7xl mx-auto container-px">
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-slate-900">Technical Architecture</h2>
+          <p class="mt-2 text-slate-600 text-sm">High-level view of inputs, processing pipeline, and storage.</p>
+        </div>
+        <div class="grid lg:grid-cols-3 gap-6">
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <h3 class="text-sm font-semibold text-slate-700">Input Sources</h3>
+            <ul class="mt-3 space-y-2 text-sm text-slate-700">
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Email & SharePoint</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> WhatsApp PDFs</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Maximo exports</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Hard-copy scans</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Other cloud links</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <h3 class="text-sm font-semibold text-slate-700">Core Engine</h3>
+            <ul class="mt-3 space-y-2 text-sm text-slate-700">
+              <li class="flex gap-2"><span class="text-brand-700">•</span> OCR extraction (Mistral OCR)</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Summaries & insights (Mistral LLM)</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Priority classifier & department routing</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> FastAPI orchestration</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <h3 class="text-sm font-semibold text-slate-700">Database & Audit</h3>
+            <ul class="mt-3 space-y-2 text-sm text-slate-700">
+              <li class="flex gap-2"><span class="text-brand-700">•</span> SQL metadata store</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Traceability to originals</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> User access logs</li>
+              <li class="flex gap-2"><span class="text-brand-700">•</span> Department dashboards</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="feasibility" class="py-16 lg:py-24">
+      <div class="max-w-7xl mx-auto container-px">
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-slate-900">Feasibility & Viability</h2>
+          <p class="mt-2 text-slate-600 text-sm">Built on proven open-source technology with local-first deployment.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <p class="text-sm font-semibold text-slate-700">Technical</p>
+            <ul class="mt-3 space-y-2 text-sm text-slate-700">
+              <li>Open-source stack (Mistral, FastAPI)</li>
+              <li>Local hosting; no internet dependency</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <p class="text-sm font-semibold text-slate-700">Economic</p>
+            <ul class="mt-3 space-y-2 text-sm text-slate-700">
+              <li>Hundreds of manual hours saved per week</li>
+              <li>Avoided fines via timely compliance</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <p class="text-sm font-semibold text-slate-700">Scalability</p>
+            <ul class="mt-3 space-y-2 text-sm text-slate-700">
+              <li>Ready for corridor expansion & depots</li>
+              <li>Architecture ready for UNS data streams</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="benefits" class="py-16 lg:py-24 bg-white">
+      <div class="max-w-7xl mx-auto container-px">
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-slate-900">Impact & Benefits</h2>
+          <p class="mt-2 text-slate-600 text-sm">Operational, social, environmental, and economic gains.</p>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <p class="text-sm font-semibold text-slate-700">Social</p>
+            <ul class="mt-3 text-sm text-slate-700 space-y-2">
+              <li>Improved safety via faster insights</li>
+              <li>Better reliability for commuters</li>
+              <li>Bilingual accessibility</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <p class="text-sm font-semibold text-slate-700">Economic</p>
+            <ul class="mt-3 text-sm text-slate-700 space-y-2">
+              <li>10,000+ productive hours saved annually</li>
+              <li>Lower operational costs</li>
+              <li>No licensing costs (open-source)</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <p class="text-sm font-semibold text-slate-700">Environmental</p>
+            <ul class="mt-3 text-sm text-slate-700 space-y-2">
+              <li>Reduced paper consumption</li>
+              <li>Lower energy footprint (local hosting)</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <p class="text-sm font-semibold text-slate-700">Operational</p>
+            <ul class="mt-3 text-sm text-slate-700 space-y-2">
+              <li>90% reduction in processing time</li>
+              <li>24/7 monitoring and routing</li>
+              <li>Real-time cross-department coordination</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="references" class="py-16 lg:py-24">
+      <div class="max-w-7xl mx-auto container-px">
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-slate-900">Research & References</h2>
+          <p class="mt-2 text-slate-600 text-sm">Core technologies and official links used to design this solution.</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <p class="text-sm font-semibold text-slate-700">AI & ML Engine</p>
+            <ul class="mt-3 space-y-2 text-sm text-slate-700">
+              <li><a class="text-brand-700 hover:underline" href="https://arxiv.org/abs/2310.06825" target="_blank" rel="noreferrer">Mistral AI Research Paper</a></li>
+              <li><a class="text-brand-700 hover:underline" href="https://mistral.ai" target="_blank" rel="noreferrer">Mistral Official Site</a></li>
+              <li><a class="text-brand-700 hover:underline" href="https://arxiv.org/abs/2401.04088" target="_blank" rel="noreferrer">Mixture of Experts (architecture)</a></li>
+            </ul>
+            <p class="mt-5 text-sm font-semibold text-slate-700">Backend & API</p>
+            <ul class="mt-3 space-y-2 text-sm text-slate-700">
+              <li><a class="text-brand-700 hover:underline" href="https://fastapi.tiangolo.com" target="_blank" rel="noreferrer">FastAPI Documentation</a></li>
+              <li><a class="text-brand-700 hover:underline" href="https://www.python.org" target="_blank" rel="noreferrer">Python Official Site</a></li>
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-subtle">
+            <p class="text-sm font-semibold text-slate-700">Database & Infra</p>
+            <ul class="mt-3 space-y-2 text-sm text-slate-700">
+              <li><a class="text-brand-700 hover:underline" href="https://www.postgresql.org" target="_blank" rel="noreferrer">PostgreSQL</a> / <a class="text-brand-700 hover:underline" href="https://www.mysql.com" target="_blank" rel="noreferrer">MySQL</a></li>
+              <li><a class="text-brand-700 hover:underline" href="https://www.langchain.com" target="_blank" rel="noreferrer">LangChain</a> / <a class="text-brand-700 hover:underline" href="https://www.llamaindex.ai" target="_blank" rel="noreferrer">LlamaIndex</a></li>
+            </ul>
+            <p class="mt-5 text-sm font-semibold text-slate-700">Supporting Research</p>
+            <ul class="mt-3 space-y-2 text-sm text-slate-700">
+              <li>Retrieval-Augmented Generation (RAG)</li>
+              <li>Multilingual NLP (English & Malayalam)</li>
+              <li>Text Classification & Prioritization</li>
+              <li>Document Parsing & OCR</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+   
+
+    <footer class="border-t border-slate-200 bg-white">
+      <div class="max-w-7xl mx-auto container-px py-8">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white">
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M4 12h16M4 17h12" stroke-linecap="round"/></svg>
+            </span>
+            <div>
+              <p class="font-semibold text-slate-900">Paper Sense</p>
+              <p class="text-xs text-slate-500">Team Local-host · Team ID 65484 · SIH 2025 · PS 25080</p>
+            </div>
+          </div>
+          <ul class="flex gap-4 text-sm text-slate-600">
+            <li><a class="hover:text-brand-700" href="#top">Top</a></li>
+            <li><a class="hover:text-brand-700" href="#problem">Problem</a></li>
+            <li><a class="hover:text-brand-700" href="#solution">Solution</a></li>
+            <li><a class="hover:text-brand-700" href="#references">References</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+  </html>
+
